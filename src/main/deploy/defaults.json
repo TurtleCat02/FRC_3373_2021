@@ -1,0 +1,60 @@
+{
+    "comment-0":"INDEXER",
+    "indexerPIDError": 0.045,
+    
+    "comment-1":"INTAKE",
+    "intakeSensorDelay": 0.186546,
+    "intakeMotorSpeed": -0.75,
+    "intakeDropSpeed":0.2,
+    "intakeDropTime":4,
+    
+    "comment-2":"CONVEYOR",
+    "conveyorSensorDelay": 0.16,
+    "conveyorReverseDelay": 0.05,
+    "conveyorMoveDelay": 0.247,
+    "conveyorMotorSpeed": 0.75,
+
+    "comment-3":"PRELOAD",
+    "preloadEncoderScale": 4096,
+    "preloadMotorSpeed": 1,
+    "preloadLockOffset": -0.2,
+    "preloadSensorDelay": 0.35,
+    "preload_P": 5,
+    "preloadRotations": -2,
+
+    "comment-4":"LOAD",
+    "loadEncoderScale": 3413,
+    "loadMotorSpeed": 1,
+    "loadLockOffset": -0.2,
+    "loadLockingDelay": 0.80,    
+    "load_P": 5,
+    "loadRotations": -1,
+
+    "comment-5": "LAUNCHER",
+    "launcherMaxSpeed": 1,
+    "launcherReadyDelay":1,
+    "launcherSpinUpDeadband":50,
+    "launcherPowerToRpm":5419,
+
+    "comment-6": "CLIMBER",
+    "climberZeroInchesOffset":44.5,
+    "climberLowInches":55.25,
+    "climberMiddleInches":61,
+    "climberHighInches":67,
+    "climberMaxInches":69,
+    "climberMaxSpeed":0.7,
+    "climberReleaseOffsetInches":-0.25,
+    "climberManualIncrement":0.5,
+    "climberCalibrateIncrementRatio":1, 
+    "climberInclineMotorSpeed":0.9,
+    "climberAdditionalSyncRatio":2,
+
+    "comment-7": "POGO",
+    "pogoMaxRotations": 146,
+    "pogoRotationPerInch":6.312807,
+
+    "comment-8": "WINCH",
+    "winchMaxRotations": 389,
+    "winchRotationPerInch":16.974159
+}
+
