@@ -6,7 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.RobotState;
+// import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3373.util.DelayTrueBoolean;
@@ -17,7 +17,7 @@ public class Indexer4 {
     private DigitalInput intakeSensor, conveyorSensor, preloadSensor;
 
     private DelayTrueBoolean timedBool1, timedBool2, timedBool3, timedBool4;
-    private boolean pos1, pos2, realPos2, pos3, timedLock4;// Timed booleans controled by respective DelayTrueBoolean values
+    private boolean pos1, pos2, /*realPos2,*/ pos3, timedLock4;// Timed booleans controled by respective DelayTrueBoolean values
     private boolean occupy4; // Is ball moving from 4 -> 5
     private boolean is3Locked, is4Locked;
     private int ballCount;
@@ -32,7 +32,7 @@ public class Indexer4 {
     private Timer panicTimer;
     private Timer delayPos2 = new Timer();
 
-    private int numTimes = 0; //TODO Remove
+    // private int numTimes = 0; //TODO Remove
 
     // Calibration variables
     private Timer calTimer = new Timer();
@@ -70,7 +70,7 @@ public class Indexer4 {
         // tboolConveyor = new DelayTrueBoolean();
         pos1 = false;
         pos2 = false;
-        realPos2 = false;
+        // realPos2 = false;
         pos3 = false;
         timedLock4 = false;
         is3Locked = false;

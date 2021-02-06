@@ -14,7 +14,7 @@ public class MathUtil {
     }
 
     /**
-     * Constrains an int between a min and max.
+     * Constrains a double between a min and max.
      * 
      * @param val the input value.
      * @param min the minimum value.
@@ -25,7 +25,7 @@ public class MathUtil {
     }
 
     /**
-     * Constrains a double between a min and max.
+     * Constrains an int between a min and max.
      * 
      * @param val the input value. the input value.
      * @param min the minimum value.
@@ -47,7 +47,7 @@ public class MathUtil {
     }
 
     /**
-     * gets a value in between two values based on a percentage
+     * Gets a value in between two values based on a percentage
      * @param start starting value
      * @param end ending value
      * @param t percent in between
@@ -57,7 +57,7 @@ public class MathUtil {
 	}
 
     /**
-     * gets a value in between two values based on a percentage
+     * Gets a value in between two values based on a percentage
      * @param start starting value
      * @param end ending value
      * @param query the lineraly interpolated value
@@ -67,7 +67,7 @@ public class MathUtil {
 	}
 
     /**
-     * gets a value in between two values based on a percentage
+     * Gets a value in between two values based on a percentage
      * @param start starting value
      * @param end ending value
      * @param query the lineraly interpolated value
@@ -83,7 +83,7 @@ public class MathUtil {
 	}
 
     /**
-     * nomalizes the value between 0 to 1 for a given range.
+     * Nomalizes the value between 0 to 1 for a given range.
      * 
      * @param val the input value.
      * @param min the minimum value.
@@ -105,7 +105,7 @@ public class MathUtil {
     }
 
     /**
-     * converts the range of polar corodanates from (-PI, PI) to (0, 2PI)
+     * Converts the range of polar corodanates from (-PI, PI) to (0, 2PI)
      * @param value the value in radians from (-PI, PI)
      */
     public static double translatePIRange(double value){

@@ -61,9 +61,11 @@ public class SwerveControl {
 	public SwerveControl(){
 		robotWidth = Constants.robotWidth;
 		robotLength = Constants.robotLength;
+		double robotX = robotWidth / 2;
+		double robotY = robotLength / 2;
 
-		double rotAngle = Math.atan((Constants.robotWidth / 2) / (Constants.robotLength / 2));
-		System.out.println("Rotational Offset: "+Math.toDegrees(rotAngle));
+		// double tanAngle = Math.atan((Constants.robotWidth / 2) / (Constants.robotLength / 2));
+		// System.out.println("Rotational Offset: "+Math.toDegrees(tanAngle));
 		
 		rotationPID = new PIDController(0.005,0.005,0);
 		initPIDController();
@@ -72,14 +74,23 @@ public class SwerveControl {
 		// ahrs.reset();
 		// System.out.println(rotAngle);
 
-		FLWheel = new SwerveWheel("FrontLeft", Constants.FLRotateMotorID, Constants.FLDriveMotorID, Constants.FLEncMin, 
+		/* FLWheel = new SwerveWheel("FrontLeft", Constants.FLRotateMotorID, Constants.FLDriveMotorID, Constants.FLEncMin, 
 			Constants.FLEncMax, Constants.FLEncHome, Constants.relativeEncoderRatio, rotAngle+Math.PI);
 		FRWheel = new SwerveWheel("FrontRight", Constants.FRRotateMotorID, Constants.FRDriveMotorID, Constants.FREncMin, 
 			Constants.FREncMax, Constants.FREncHome, Constants.relativeEncoderRatio, rotAngle+(Math.PI/2));
 		BLWheel = new SwerveWheel("BackLeft", Constants.BLRotateMotorID, Constants.BLDriveMotorID, Constants.BLEncMin, 
 			Constants.BLEncMax, Constants.BLEncHome, Constants.relativeEncoderRatio, rotAngle-(Math.PI/2));
 		BRWheel = new SwerveWheel("BackRight", Constants.BRRotateMotorID, Constants.BRDriveMotorID, Constants.BREncMin, 
-			Constants.BREncMax, Constants.BREncHome, Constants.relativeEncoderRatio, rotAngle);
+			Constants.BREncMax, Constants.BREncHome, Constants.relativeEncoderRatio, rotAngle); */
+
+		FLWheel = new SwerveWheel("FrontLeft", Constants.FLRotateMotorID, Constants.FLDriveMotorID, Constants.FLEncMin, 
+			Constants.FLEncMax, Constants.FLEncHome, Constants.relativeEncoderRatio, robotX / robotY);
+		FRWheel = new SwerveWheel("FrontRight", Constants.FRRotateMotorID, Constants.FRDriveMotorID, Constants.FREncMin, 
+			Constants.FREncMax, Constants.FREncHome, Constants.relativeEncoderRatio, - robotX / robotY);
+		BLWheel = new SwerveWheel("BackLeft", Constants.BLRotateMotorID, Constants.BLDriveMotorID, Constants.BLEncMin, 
+			Constants.BLEncMax, Constants.BLEncHome, Constants.relativeEncoderRatio, - robotX / robotY);
+		BRWheel = new SwerveWheel("BackRight", Constants.BRRotateMotorID, Constants.BRDriveMotorID, Constants.BREncMin, 
+			Constants.BREncMax, Constants.BREncHome, Constants.relativeEncoderRatio, robotX / robotY);
 
 		FLWheel.setPIDController(Constants.ROTATE_FL_PID);
 		FRWheel.setPIDController(Constants.ROTATE_FR_PID);
@@ -96,6 +107,9 @@ public class SwerveControl {
 	// ########### 			  Autonomous 	     ############
 	// ######################################################
 
+	/**
+	 * Resets/initializes the PID controller
+	 */
 	private void initPIDController() {
 		rotationPID.reset();
 		rotationPID.enableContinuousInput(-180, 180);
@@ -214,7 +228,7 @@ public class SwerveControl {
 	// ######################################################
 
 	/**
-	 * Controls the swerve drive based on joystick input
+	 * Controls the swerve drive based on joystick input, called every teleop loop
 	 * @param LX Left Joystick X axis (-1,1)
 	 * @param LY Left Joystick Y axis (-1,1)
 	 * @param RX Right Joystick X axis (-1,1)
@@ -356,6 +370,10 @@ public class SwerveControl {
 		BLWheel.drive(); */
 	}
 
+	/**
+	 * Calculates the rotation speed needed to correct the robot's rotation
+	 * @return Rotation speed
+	 */
 	private double getRotationalCorrection() {
 		double currentRotation = Math.toRadians(ahrs.getYaw());
 		double angleError = targetRobotAngle - currentRotation;
@@ -379,6 +397,12 @@ public class SwerveControl {
 		return speed;
 	} 
 
+	/**
+	 * Snaps drive vectors based on controller limiter mode
+	 * @param angle The raw input angle
+	 * @param magnitude The raw input magnitude
+	 * @return The adjusted vectors
+	 */
 	private double applyControllerLimiter(double angle, double magnitude){
 		double regionFactor = 0;
 		double regionNumber = 0;
@@ -443,16 +467,27 @@ public class SwerveControl {
 		}
 	}
 
+	/**
+	 * Changes controller limiter mode
+	 * @param limiter Vector snapping mode ID
+	 */
 	public void changeControllerLimiter(int limiter){
 		controllerMode = (byte)limiter;
 	}
 
+	/**
+	 * Cycles through controller limiter modes
+	 */
 	public void changeControllerLimiter(){
 		controllerMode++;
 		if(controllerMode>5)
 			controllerMode=0;
 	}
 
+	/**
+	 * Rotates the robot around an object while facing it
+	 * @param RX The raw rotation input (-1, 1)
+	 */
 	public void calculateObjectControl(double RX) {
 		double distanceToFront = distanceToCenter - robotLength / 2;
 		double distanceToBack = distanceToCenter + robotLength / 2;

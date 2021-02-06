@@ -1,18 +1,18 @@
 package frc.team3373;
 import frc.team3373.util.PIDConstant;
 
-public class Constants{
+public class Constants {
     //* Robot Config
     //TODO change robot dimensions to match this years robot
     public static final double robotLength = 26.25; //The larger dimension, measure from center of wheels
-    public static final double robotWidth = 20.3125;
+    public static final double robotWidth = 20.10;
 
 
     public static final double wheelCircumference = 18.8495559215387594307759; //TODO measure this value
     //public static final double relativeEncoderRatio= 17.999954;
     public static final double relativeEncoderRatio= 17.9992371;
 
-    public static final double ROTATIONAL_CORRECTION_FACTOR = 4; 
+    public static final double ROTATIONAL_CORRECTION_FACTOR = 4;
 
 
     public static final int BLDriveMotorID = 1;

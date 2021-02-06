@@ -8,7 +8,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
 
-import edu.wpi.first.wpilibj.Notifier;
+// import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3373.util.PIDConstant;
 
@@ -122,7 +122,7 @@ public class SwerveWheel {
 	 */
 	public void resetPosition(){
 		rotateMotor.set(0);
-		Runnable delayedAction = new Runnable(){ //! this is a Test! Remove if wheels have home position issues
+		/* Runnable delayedAction = new Runnable(){ //! this is a Test! Remove if wheels have home position issues
 			public void run() {
 				double newPos=getCurrentAbsAngle()*relRadfactor;
 				rotateEncoder.setPosition(newPos);
@@ -130,12 +130,12 @@ public class SwerveWheel {
 			}
 		};
 		Notifier delay = new Notifier(delayedAction);
-		delay.startSingle(0.1);
+		delay.startSingle(0.1); */
 		//delay.close();	
 		
-		/*double newPos=getCurrentAbsAngle()*relRadfactor;
+		double newPos=getCurrentAbsAngle()*relRadfactor;
 		rotateEncoder.setPosition(newPos);
-		m_pidController.setReference(newPos, ControlType.kPosition); */
+		m_pidController.setReference(newPos, ControlType.kPosition);
 	}
 
 	/**

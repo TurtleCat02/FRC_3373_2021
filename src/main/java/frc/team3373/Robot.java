@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
 
         launcher = Launcher.getInstance();
 
-        climber = Climber.getInstance();//TODO uncomment
+        climber = Climber.getInstance();
 
         ahrs = SuperAHRS.getInstance();
         indexer = Indexer4.getInstance();
@@ -320,7 +320,7 @@ public class Robot extends TimedRobot {
         
         if (shooter.getRawAxis(3) > 0.5) {
             indexer.startShooting();
-            double launcher_inches = SmartDashboard.getNumber("Shoot Distance", 0);
+            // double launcher_inches = SmartDashboard.getNumber("Shoot Distance", 0);
             launcher.setSpeed(0.45);
             //launcher.setSpeedFromDistance(launcher_inches);
             vis.switchStreamCam(2);

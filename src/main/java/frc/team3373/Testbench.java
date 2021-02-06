@@ -6,11 +6,9 @@ import org.json.JSONException;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team3373.Indexer.State;
 
 class Testbench extends TimedRobot {
     private SuperJoystick driver;
-    private Indexer indexer;
 
     @Override
     public void robotInit() {
@@ -27,7 +25,6 @@ class Testbench extends TimedRobot {
             }
         }
         driver = new SuperJoystick(0);
-        indexer = Indexer.getInstance();
 
         SmartDashboard.putBoolean("Save Config", false);
         SmartDashboard.putBoolean("Restore Backup", false);
@@ -76,7 +73,6 @@ class Testbench extends TimedRobot {
     @Override
     public void testPeriodic() {
         calibControls();
-        indexer.update();
         // SmartDashboard.putNumber("Preload Pos", indexer.getRelPos(Motors.PRELOAD));
         // SmartDashboard.putNumber("Preload Abs", indexer.getAbsPos(Motors.PRELOAD));
         // SmartDashboard.putNumber("Preload Deg", indexer.getRelDeg(Motors.PRELOAD));
@@ -92,7 +88,6 @@ class Testbench extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         joystickControls();
-        indexer.update();
         // SmartDashboard.putNumber("Preload Pos", indexer.getRelPos(Motors.PRELOAD));
         // SmartDashboard.putNumber("Preload Abs", indexer.getAbsPos(Motors.PRELOAD));
         // SmartDashboard.putNumber("Preload Deg", indexer.getRelDeg(Motors.PRELOAD));
@@ -105,24 +100,24 @@ class Testbench extends TimedRobot {
     //! = code that was causing errors
 
     private void joystickControls() {
-        if (driver.isXPushed()) {
-            indexer.stopIntake();
-        }
-        if (driver.isYPushed()) {
-            //indexer.startIntake();
-        }
-        if (driver.isAPushed()) {
-            indexer.unloadBall5();
-        }
-        if (driver.getRawAxis(3) > 0.5) {
-            indexer.startShooting();
-        } else {
-            indexer.stopShooting();
-        }
+        // if (driver.isXPushed()) {
+        //     indexer.stopIntake();
+        // }
+        // if (driver.isYPushed()) {
+        //     //indexer.startIntake();
+        // }
+        // if (driver.isAPushed()) {
+        //     indexer.unloadBall5();
+        // }
+        // if (driver.getRawAxis(3) > 0.5) {
+        //     indexer.startShooting();
+        // } else {
+        //     indexer.stopShooting();
+        // }
 
-        if (driver.isStartPushed()) {
-            indexer.setInitialBallStates(new State[]{State.OCCUPIED,State.OCCUPIED,State.OCCUPIED,State.OCCUPIED,State.OCCUPIED});
-        }
+        // if (driver.isStartPushed()) {
+        //     indexer.setInitialBallStates(new State[]{State.OCCUPIED,State.OCCUPIED,State.OCCUPIED,State.OCCUPIED,State.OCCUPIED});
+        // }
         driver.clearButtons();
     }
 
