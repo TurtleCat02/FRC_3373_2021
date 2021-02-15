@@ -34,7 +34,7 @@ public class MathUtil {
     public static int clamp(int val, int min, int max) {
         return Math.max(min, Math.min(max, val));
     }
-    
+
     /**
      * Returns true if value is between min and max
      * 
@@ -48,39 +48,43 @@ public class MathUtil {
 
     /**
      * Gets a value in between two values based on a percentage
+     * 
      * @param start starting value
-     * @param end ending value
-     * @param t percent in between
+     * @param end   ending value
+     * @param t     percent in between
      */
     public static double lerp(double start, double end, double t) {
-		return start + (end - start) * t;
-	}
+        return start + (end - start) * t;
+    }
 
     /**
      * Gets a value in between two values based on a percentage
+     * 
      * @param start starting value
-     * @param end ending value
+     * @param end   ending value
      * @param query the lineraly interpolated value
      */
-	public static double inverseLerp(double start, double end, double query) {
-		return inverseLerp(start, end, query, true);
-	}
+    public static double inverseLerp(double start, double end, double query) {
+        return inverseLerp(start, end, query, true);
+    }
 
     /**
      * Gets a value in between two values based on a percentage
-     * @param start starting value
-     * @param end ending value
-     * @param query the lineraly interpolated value
-     * @param shouldClamp whether or not the finale value should be clamped between 0-1.0
+     * 
+     * @param start       starting value
+     * @param end         ending value
+     * @param query       the lineraly interpolated value
+     * @param shouldClamp whether or not the finale value should be clamped between
+     *                    0-1.0
      */
-	public static double inverseLerp(double start, double end, double query, boolean shouldClamp) {
-		double t = (query - start) / (end - start);
-		if (shouldClamp) {
-			return clamp(t, 0.0, 1.0);
-		} else {
-			return t;
-		}
-	}
+    public static double inverseLerp(double start, double end, double query, boolean shouldClamp) {
+        double t = (query - start) / (end - start);
+        if (shouldClamp) {
+            return clamp(t, 0.0, 1.0);
+        } else {
+            return t;
+        }
+    }
 
     /**
      * Nomalizes the value between 0 to 1 for a given range.
@@ -106,13 +110,14 @@ public class MathUtil {
 
     /**
      * Converts the range of polar corodanates from (-PI, PI) to (0, 2PI)
+     * 
      * @param value the value in radians from (-PI, PI)
      */
-    public static double translatePIRange(double value){
-        if(value<0){
-			value+=2*Math.PI;
-		}
-		return value;
+    public static double translatePIRange(double value) {
+        if (value < 0) {
+            value += 2 * Math.PI;
+        }
+        return value;
     }
 
     /**

@@ -153,7 +153,7 @@ public class SwerveWheel {
 	 * gets the current angle of the wheel in radians;
 	 */
 	public double getCurrentAngle() {
-		double rad = (rotateEncoder.getPosition()/relRadfactor);
+		double rad = (rotateEncoder.getPosition() / relRadfactor);
 		//rad = rad%TWOPI;
 		return rad;
 	}

@@ -10,7 +10,7 @@ public class SwerveControl {
 	public static enum Side {
 		NORTH, SOUTH, EAST, WEST, UNKNOWN;
 	}
-	
+
 	public static enum DriveMode {
 		ROBOTCENTRIC, FIELDCENTRIC, OBJECTCENTRIC;
 	}
@@ -53,10 +53,14 @@ public class SwerveControl {
 		return instance;
 	}
 
-	/*public SwerveControl(int LFrotateMotorID, int LFdriveMotorID, int LFEncMin, int LFEncMax, int LFEncHome,
-			int LBrotateMotorID, int LBdriveMotorID, int LBEncMin, int LBEncMax, int LBEncHome, int RFrotateMotorID,
-			int RFdriveMotorID, int RFEncMin, int RFEncMax, int RFEncHome, int RBrotateMotorID, int RBdriveMotorID,
-			int RBEncMin, int RBEncMax, int RBEncHome, SuperAHRS AHRS, double width, double length) {*/
+	// public SwerveControl(int LFrotateMotorID, int LFdriveMotorID, int LFEncMin,
+	// int LFEncMax, int LFEncHome,
+	// int LBrotateMotorID, int LBdriveMotorID, int LBEncMin, int LBEncMax, int
+	// LBEncHome, int RFrotateMotorID,
+	// int RFdriveMotorID, int RFEncMin, int RFEncMax, int RFEncHome, int
+	// RBrotateMotorID, int RBdriveMotorID,
+	// int RBEncMin, int RBEncMax, int RBEncHome, SuperAHRS AHRS, double width,
+	// double length) {
 
 	public SwerveControl() {
 		robotWidth = Constants.robotWidth;
@@ -66,7 +70,7 @@ public class SwerveControl {
 
 		double rotAngle = Math.atan((Constants.robotWidth / 2) / (Constants.robotLength / 2));
 		System.out.println("Rotational Offset: " + Math.toDegrees(rotAngle));
-		
+
 		rotationPID = new PIDController(0.005, 0.005, 0);
 		initPIDController();
 
@@ -74,23 +78,33 @@ public class SwerveControl {
 		// ahrs.reset();
 		// System.out.println(rotAngle);
 
-		/* FLWheel = new SwerveWheel("FrontLeft", Constants.FLRotateMotorID, Constants.FLDriveMotorID, Constants.FLEncMin, 
-			Constants.FLEncMax, Constants.FLEncHome, Constants.relativeEncoderRatio, rotAngle+Math.PI);
-		FRWheel = new SwerveWheel("FrontRight", Constants.FRRotateMotorID, Constants.FRDriveMotorID, Constants.FREncMin, 
-			Constants.FREncMax, Constants.FREncHome, Constants.relativeEncoderRatio, rotAngle+(Math.PI/2));
-		BLWheel = new SwerveWheel("BackLeft", Constants.BLRotateMotorID, Constants.BLDriveMotorID, Constants.BLEncMin, 
-			Constants.BLEncMax, Constants.BLEncHome, Constants.relativeEncoderRatio, rotAngle-(Math.PI/2));
-		BRWheel = new SwerveWheel("BackRight", Constants.BRRotateMotorID, Constants.BRDriveMotorID, Constants.BREncMin, 
-			Constants.BREncMax, Constants.BREncHome, Constants.relativeEncoderRatio, rotAngle); */
+		// FLWheel = new SwerveWheel("FrontLeft", Constants.FLRotateMotorID,
+		// Constants.FLDriveMotorID, Constants.FLEncMin,
+		// Constants.FLEncMax, Constants.FLEncHome, Constants.relativeEncoderRatio,
+		// rotAngle+Math.PI);
+		// FRWheel = new SwerveWheel("FrontRight", Constants.FRRotateMotorID,
+		// Constants.FRDriveMotorID, Constants.FREncMin,
+		// Constants.FREncMax, Constants.FREncHome, Constants.relativeEncoderRatio,
+		// rotAngle+(Math.PI/2));
+		// BLWheel = new SwerveWheel("BackLeft", Constants.BLRotateMotorID,
+		// Constants.BLDriveMotorID, Constants.BLEncMin,
+		// Constants.BLEncMax, Constants.BLEncHome, Constants.relativeEncoderRatio,
+		// rotAngle-(Math.PI/2));
+		// BRWheel = new SwerveWheel("BackRight", Constants.BRRotateMotorID,
+		// Constants.BRDriveMotorID, Constants.BREncMin,
+		// Constants.BREncMax, Constants.BREncHome, Constants.relativeEncoderRatio,
+		// rotAngle);
 
-		FLWheel = new SwerveWheel("FrontLeft", Constants.FLRotateMotorID, Constants.FLDriveMotorID, Constants.FLEncMin, 
-			Constants.FLEncMax, Constants.FLEncHome, Constants.relativeEncoderRatio, Math.atan(robotX/robotY) + Math.PI);
-		FRWheel = new SwerveWheel("FrontRight", Constants.FRRotateMotorID, Constants.FRDriveMotorID, Constants.FREncMin, 
-			Constants.FREncMax, Constants.FREncHome, Constants.relativeEncoderRatio, Math.atan(-robotX/robotY) + Math.PI);
-		BLWheel = new SwerveWheel("BackLeft", Constants.BLRotateMotorID, Constants.BLDriveMotorID, Constants.BLEncMin, 
-			Constants.BLEncMax, Constants.BLEncHome, Constants.relativeEncoderRatio, Math.atan(-robotX/robotY));
-		BRWheel = new SwerveWheel("BackRight", Constants.BRRotateMotorID, Constants.BRDriveMotorID, Constants.BREncMin, 
-			Constants.BREncMax, Constants.BREncHome, Constants.relativeEncoderRatio, Math.atan(robotX/robotY));
+		FLWheel = new SwerveWheel("FrontLeft", Constants.FLRotateMotorID, Constants.FLDriveMotorID, Constants.FLEncMin,
+				Constants.FLEncMax, Constants.FLEncHome, Constants.relativeEncoderRatio,
+				Math.atan(robotX / robotY) + Math.PI);
+		FRWheel = new SwerveWheel("FrontRight", Constants.FRRotateMotorID, Constants.FRDriveMotorID, Constants.FREncMin,
+				Constants.FREncMax, Constants.FREncHome, Constants.relativeEncoderRatio,
+				Math.atan(-robotX / robotY) + Math.PI);
+		BLWheel = new SwerveWheel("BackLeft", Constants.BLRotateMotorID, Constants.BLDriveMotorID, Constants.BLEncMin,
+				Constants.BLEncMax, Constants.BLEncHome, Constants.relativeEncoderRatio, Math.atan(-robotX / robotY));
+		BRWheel = new SwerveWheel("BackRight", Constants.BRRotateMotorID, Constants.BRDriveMotorID, Constants.BREncMin,
+				Constants.BREncMax, Constants.BREncHome, Constants.relativeEncoderRatio, Math.atan(robotX / robotY));
 
 		FLWheel.setPIDController(Constants.ROTATE_FL_PID);
 		FRWheel.setPIDController(Constants.ROTATE_FR_PID);
@@ -98,14 +112,14 @@ public class SwerveControl {
 		BRWheel.setPIDController(Constants.ROTATE_BR_PID);
 
 		wheelArray = new SwerveWheel[] { FLWheel, BLWheel, BRWheel, FRWheel };
-		
+
 		resetOrentation();
 		recalculateWheelPosition();
 	}
 
-	// ######################################################
-	// ########### 			  Autonomous 	     ############
-	// ######################################################
+	// ###################################
+	// ########### Autonomous ############
+	// ###################################
 
 	/**
 	 * Resets/initializes the PID controller
@@ -115,21 +129,22 @@ public class SwerveControl {
 		rotationPID.enableContinuousInput(-180, 180);
 		rotationPID.setTolerance(0.5);
 	}
-	
+
 	/**
 	 * moves the robot in a direction for a certain amount of time
+	 * 
 	 * @param angle the angle in degrees to drive at (0,360)
-	 * @param speed	the speed the drive at (0,1)
-	 * @param time the time in seconds to drive for
+	 * @param speed the speed the drive at (0,1)
+	 * @param time  the time in seconds to drive for
 	 */
 	public void relativeMoveRobot(double angle, double speed, double time) {
 		double oldSpeed = maxTargetSpeed;
 		setDriveSpeed(speed);
 		calculateSwerveControl(Math.sin(Math.toRadians(angle)), -Math.cos(Math.toRadians(angle)), 0);
 		try {
-			Thread.sleep((long)(time * 1000));
+			Thread.sleep((long) (time * 1000));
 		} catch (Exception e) {
-			//Do nothing
+			// Do nothing
 		}
 		calculateSwerveControl(0, 0, 0);
 		setDriveSpeed(oldSpeed);
@@ -142,10 +157,11 @@ public class SwerveControl {
 
 	/**
 	 * Rotates the robot a relative amount
-	 * @param angle	The amount to rotate by
+	 * 
+	 * @param angle The amount to rotate by
 	 */
 	public void relativeRotateRobot(double angle) {
-		//SmartDashboard.putNumber("Delta Angle", angle);
+		// SmartDashboard.putNumber("Delta Angle", angle);
 		double currentAngle = ahrs.getYaw();
 		SmartDashboard.putNumber("Current Angle:", currentAngle);
 		double targetAngle = currentAngle + angle;
@@ -156,82 +172,89 @@ public class SwerveControl {
 			targetAngle += 360;
 		}
 		SmartDashboard.putNumber("Target Angle: ", targetAngle);
-		
+
 		initPIDController();
-		//rotationPID.setSetpoint(targetAngle);
-		double power = rotationPID.calculate(currentAngle,targetAngle);
-		//SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
-		while (!rotationPID.atSetpoint() && RobotState.isEnabled()) { //waits until we are within range of the angle
-			//SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
-			//rotationPID.setSetpoint(targetAngle); //tells PID loop to go to the targetAngle
+		// rotationPID.setSetpoint(targetAngle);
+		double power = rotationPID.calculate(currentAngle, targetAngle);
+		// SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
+		while (!rotationPID.atSetpoint() && RobotState.isEnabled()) { // waits until we are within range of the angle
+			// SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
+			// rotationPID.setSetpoint(targetAngle); //tells PID loop to go to the
+			// targetAngle
 			currentAngle = ahrs.getYaw();
 			SmartDashboard.putNumber("Current Angle:", currentAngle);
 			SmartDashboard.putNumber("Position Error", rotationPID.getPositionError());
-			//SmartDashboard.putNumber("Velocity Error", rotationPID.getVelocityError());
+			// SmartDashboard.putNumber("Velocity Error", rotationPID.getVelocityError());
 			power = rotationPID.calculate(currentAngle);
-			//SmartDashboard.putNumber("PID Power: ", power);
-			//calculateSwerveControl(0,0,0.2);
-			calculateSwerveControl(0, 0, MathUtil.clamp(power, -.75, .75)); //sets the wheels to rotate based off PID loop
+			// SmartDashboard.putNumber("PID Power: ", power);
+			// calculateSwerveControl(0,0,0.2);
+			calculateSwerveControl(0, 0, MathUtil.clamp(power, -.75, .75)); // sets the wheels to rotate based off PID
+																			// loop
 			try {
 				Thread.sleep(1);
 			} catch (Exception e) {
-				//Do nothing
+				// Do nothing
 			}
 		}
-		//SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
-		calculateSwerveControl(0,0,0); //stops robot spinning
+		// SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
+		calculateSwerveControl(0, 0, 0); // stops robot spinning
 		SmartDashboard.putNumber("Current Angle:", currentAngle);
 	}
 
 	/**
-	 * Used in Autonomous Mode Only, Rotates robot to a certain angle regardless of robots current position
+	 * Used in Autonomous Mode Only, Rotates robot to a certain angle regardless of
+	 * robots current position
+	 * 
 	 * @param targetAngle Angle(degrees) to which the robot will rotate
 	 */
-	
+
 	public void absoluteRotateRobot(double targetAngle) {
 		double currentAngle = ahrs.getYaw();
 		if (targetAngle >= 180) {
-			targetAngle-=360;
+			targetAngle -= 360;
 		} else if (targetAngle < -180) {
-			targetAngle +=360;
+			targetAngle += 360;
 		}
 
 		SmartDashboard.putNumber("Target Angle: ", targetAngle);
 		initPIDController();
-		//rotationPID.setSetpoint(targetAngle);
-		double power = rotationPID.calculate(currentAngle,targetAngle);
-		//SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
-		while (!rotationPID.atSetpoint() && RobotState.isEnabled()) { //waits until we are within range of the angle
-			//SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
-			//rotationPID.setSetpoint(targetAngle); //tells PID loop to go to the targetAngle
+		// rotationPID.setSetpoint(targetAngle);
+		double power = rotationPID.calculate(currentAngle, targetAngle);
+		// SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
+		while (!rotationPID.atSetpoint() && RobotState.isEnabled()) { // waits until we are within range of the angle
+			// SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
+			// rotationPID.setSetpoint(targetAngle); //tells PID loop to go to the
+			// targetAngle
 			currentAngle = ahrs.getYaw();
 			SmartDashboard.putNumber("Current Angle:", currentAngle);
 			SmartDashboard.putNumber("Position Error", rotationPID.getPositionError());
-			//SmartDashboard.putNumber("Velocity Error", rotationPID.getVelocityError());
+			// SmartDashboard.putNumber("Velocity Error", rotationPID.getVelocityError());
 			power = rotationPID.calculate(currentAngle);
-			//SmartDashboard.putNumber("PID Power: ", power);
-			//calculateSwerveControl(0,0,0.2);
-			calculateSwerveControl(0, 0, MathUtil.clamp(power, -.75, .75)); //sets the wheels to rotate based off PID loop
-			try{
+			// SmartDashboard.putNumber("PID Power: ", power);
+			// calculateSwerveControl(0,0,0.2);
+			calculateSwerveControl(0, 0, MathUtil.clamp(power, -.75, .75)); // sets the wheels to rotate based off PID
+																			// loop
+			try {
 				Thread.sleep(1);
 			} catch (Exception e) {
-				//Do nothing
+				// Do nothing
 			}
 		}
 
-		calculateSwerveControl(0,0,0); //stops robot spinning
+		calculateSwerveControl(0, 0, 0); // stops robot spinning
 		SmartDashboard.putNumber("Current Angle:", currentAngle);
 	}
 
-	// ######################################################
-	// ########### 				Teleop 		     ############
-	// ######################################################
+	// ###############################
+	// ########### Teleop ############
+	// ###############################
 
 	/**
 	 * Controls the swerve drive based on joystick input, called every teleop loop
-	 * @param LX Left Joystick X axis (-1,1)
-	 * @param LY Left Joystick Y axis (-1,1)
-	 * @param RX Right Joystick X axis (-1,1)
+	 * 
+	 * @param LX Left Joystick X axis (-1, 1)
+	 * @param LY Left Joystick Y axis (-1, 1)
+	 * @param RX Right Joystick X axis (-1, 1)
 	 */
 	public void calculateSwerveControl(double LX, double LY, double RX) {
 		LY = -LY; // inverts joystick LY to match the Cartesian plane
@@ -264,29 +287,32 @@ public class SwerveControl {
 		// translational vector
 		// rotation vector
 
-		// Same for all wheels so therefore we only do the transitional vector math once.
+		// Same for all wheels so therefore we only do the transitional vector math
+		// once.
 		// magnitude of joystick
-		translationalMagnitude = Math.sqrt((translationalYComponent * translationalYComponent) + (translationalXComponent * translationalXComponent));
+		translationalMagnitude = Math.sqrt((translationalYComponent * translationalYComponent)
+				+ (translationalXComponent * translationalXComponent));
 		// angle of joystick
 		translationalAngle = Math.atan2(translationalYComponent, translationalXComponent);
 
 		translationalAngle = applyControllerLimiter(translationalAngle, translationalMagnitude);
 		SmartDashboard.putNumber("direction", Math.toDegrees(translationalAngle));
-		//translationalAngle =Math.toDegrees(Math.atan2(translationalYComponent, translationalXComponent));
+		// translationalAngle =Math.toDegrees(Math.atan2(translationalYComponent,
+		// translationalXComponent));
 
-		//Math.floor(LX/(360/8))*(360/8);
+		// Math.floor(LX/(360/8))*(360/8);
 
 		// if in field centric mode make offset equal to the current angle of the navX
-		if (RX != 0){
+		if (RX != 0) {
 			getTargetAngleDelay = System.currentTimeMillis() + 200;
 			targetRobotAngle = Math.toRadians(ahrs.getYaw());
 		} else {
-			if(getTargetAngleDelay > System.currentTimeMillis()){
+			if (getTargetAngleDelay > System.currentTimeMillis()) {
 				targetRobotAngle = Math.toRadians(ahrs.getYaw());
 			} else {
 				rAxis = getRotationalCorrection();
 			}
-			if (LX == 0 && LY == 0){
+			if (LX == 0 && LY == 0) {
 				rAxis = 0;
 			}
 			RX = rAxis;
@@ -307,15 +333,15 @@ public class SwerveControl {
 		// sets the robot front to be at the ang
 		translationalAngle += frontDirectionOffset;
 		if (translationalAngle >= Math.PI) {
-			translationalAngle -= 2*Math.PI;
+			translationalAngle -= 2 * Math.PI;
 		} else if (translationalAngle < -Math.PI) {
-			translationalAngle += 2*Math.PI;
+			translationalAngle += 2 * Math.PI;
 		}
 
 		// calculates y component of translation vector
 		translationalYComponent = Math.sin(translationalAngle) * translationalMagnitude;
 		// calculates x component of translation vector
-		translationalXComponent = Math.cos(translationalAngle) * translationalMagnitude; 
+		translationalXComponent = Math.cos(translationalAngle) * translationalMagnitude;
 
 		if (LY == 0 && LX == 0 && RX == 0) {
 			stopMoving();
@@ -333,7 +359,7 @@ public class SwerveControl {
 					rotateXComponent = -rotateXComponent;
 					rotateYComponent = -rotateYComponent;
 				}
-				
+
 				// sets the speed based off translational and rotational vectors
 				wheel.setSpeed(Math.sqrt(Math.pow(rotateXComponent + translationalXComponent, 2)
 						+ Math.pow((rotateYComponent + translationalYComponent), 2)) * maxTargetSpeed);
@@ -341,7 +367,7 @@ public class SwerveControl {
 				wheel.setTargetAngle(MathUtil.translatePIRange(Math.atan2((rotateYComponent + translationalYComponent),
 						(rotateXComponent + translationalXComponent))));// sets the target angle based off translation
 				// and rotational vectors
-				if(maxSpeed < wheel.getSpeed()) {
+				if (maxSpeed < wheel.getSpeed()) {
 					maxSpeed = wheel.getSpeed();
 				}
 			}
@@ -359,31 +385,23 @@ public class SwerveControl {
 		}
 		// System.out.println("");
 		// Makes the wheels go to calculated target angle
-		/* FRWheel.goToAngle();
-		FLWheel.goToAngle();
-		BRWheel.goToAngle();
-		BLWheel.goToAngle();
-		// Make the wheels drive at their calculated speed
-		FRWheel.drive();
-		FLWheel.drive();
-		BRWheel.drive();
-		BLWheel.drive(); */
 	}
 
 	/**
 	 * Calculates the rotation speed needed to correct the robot's rotation
+	 * 
 	 * @return Rotation speed
 	 */
 	private double getRotationalCorrection() {
 		double currentRotation = Math.toRadians(ahrs.getYaw());
 		double angleError = targetRobotAngle - currentRotation;
-		if (angleError>Math.PI) {
+		if (angleError > Math.PI) {
 			angleError -= 2 * Math.PI;
 		} else if (angleError < -Math.PI) {
 			angleError += 2 * Math.PI;
 		}
-		//int directionMod = -1;
-		//int optimalDirection = 1;
+		// int directionMod = -1;
+		// int optimalDirection = 1;
 		SmartDashboard.putNumber("Current Target", targetRobotAngle);
 		SmartDashboard.putNumber("angleError", angleError);
 		double speed = (angleError / Math.PI) * Constants.ROTATIONAL_CORRECTION_FACTOR;
@@ -395,63 +413,40 @@ public class SwerveControl {
 
 		SmartDashboard.putNumber("Rotational Speed", speed);
 		return speed;
-	} 
+	}
 
 	/**
 	 * Snaps drive vectors based on controller limiter mode
-	 * @param angle The raw input angle
+	 * 
+	 * @param angle     The raw input angle
 	 * @param magnitude The raw input magnitude
 	 * @return The adjusted vectors
 	 */
-	private double applyControllerLimiter(double angle, double magnitude){
+	private double applyControllerLimiter(double angle, double magnitude) {
 		double regionFactor = 0;
 		double regionNumber = 0;
 		switch (controllerMode) {
-		case 0: // infinite precision
-			SmartDashboard.putString("Control Limiter", "None");
-			return angle;
-
-		case 1: // Segmented control
-			SmartDashboard.putString("Control Limiter", "Segmented");
-			regionFactor = Math.PI / (Constants.numberOfControlSegments / 2);
-			return Math.round(angle / regionFactor) * regionFactor;
-
-		case 2: // speed segmented control
-			SmartDashboard.putString("Control Limiter", "Speed Segmented");
-			if (magnitude < 0.5) {
-				regionFactor = Math.PI / (Constants.numberOfControlSegments / 4);
-			} else {
-				regionFactor = Math.PI / (Constants.numberOfControlSegments / 2);
-			}
-
-			return Math.round(angle / regionFactor) * regionFactor;
-
-		case 3: // 4 segmented regions with infinitely precise regions
-			SmartDashboard.putString("Control Limiter", "Semi-segmented");
-			regionFactor = Math.PI / (Constants.numberOfControlSegments);
-			regionNumber = Math.round(angle / regionFactor);
-
-			if (regionNumber == 0 || Math.abs(regionNumber) == Constants.numberOfControlSegments
-					|| Math.abs(regionNumber) == Constants.numberOfControlSegments / 2) {
-				return regionNumber * regionFactor;
-			}
-			return angle;
-
-		case 4: // speed segmented control & infinite precision
-			SmartDashboard.putString("Control Limiter", "Speed Segmented & Infinite Precision");
-			if (magnitude < 0.5) {
-				regionFactor = Math.PI / (Constants.numberOfControlSegments / 2);
-				return Math.round(angle / regionFactor) * regionFactor;
-			} else {
+			case 0: // infinite precision
+				SmartDashboard.putString("Control Limiter", "None");
 				return angle;
-			}
 
-		case 5: // speed segmented control & 4 segmented regions with infinitely precise regions
-			SmartDashboard.putString("Control Limiter", "Speed Segmented & Semi-segmented");
-			if (magnitude < 0.5) {
+			case 1: // Segmented control
+				SmartDashboard.putString("Control Limiter", "Segmented");
 				regionFactor = Math.PI / (Constants.numberOfControlSegments / 2);
 				return Math.round(angle / regionFactor) * regionFactor;
-			} else {
+
+			case 2: // speed segmented control
+				SmartDashboard.putString("Control Limiter", "Speed Segmented");
+				if (magnitude < 0.5) {
+					regionFactor = Math.PI / (Constants.numberOfControlSegments / 4);
+				} else {
+					regionFactor = Math.PI / (Constants.numberOfControlSegments / 2);
+				}
+
+				return Math.round(angle / regionFactor) * regionFactor;
+
+			case 3: // 4 segmented regions with infinitely precise regions
+				SmartDashboard.putString("Control Limiter", "Semi-segmented");
 				regionFactor = Math.PI / (Constants.numberOfControlSegments);
 				regionNumber = Math.round(angle / regionFactor);
 
@@ -460,19 +455,44 @@ public class SwerveControl {
 					return regionNumber * regionFactor;
 				}
 				return angle;
-			}
 
-		default:
-			return angle;
+			case 4: // speed segmented control & infinite precision
+				SmartDashboard.putString("Control Limiter", "Speed Segmented & Infinite Precision");
+				if (magnitude < 0.5) {
+					regionFactor = Math.PI / (Constants.numberOfControlSegments / 2);
+					return Math.round(angle / regionFactor) * regionFactor;
+				} else {
+					return angle;
+				}
+
+			case 5: // speed segmented control & 4 segmented regions with infinitely precise regions
+				SmartDashboard.putString("Control Limiter", "Speed Segmented & Semi-segmented");
+				if (magnitude < 0.5) {
+					regionFactor = Math.PI / (Constants.numberOfControlSegments / 2);
+					return Math.round(angle / regionFactor) * regionFactor;
+				} else {
+					regionFactor = Math.PI / (Constants.numberOfControlSegments);
+					regionNumber = Math.round(angle / regionFactor);
+
+					if (regionNumber == 0 || Math.abs(regionNumber) == Constants.numberOfControlSegments
+							|| Math.abs(regionNumber) == Constants.numberOfControlSegments / 2) {
+						return regionNumber * regionFactor;
+					}
+					return angle;
+				}
+
+			default:
+				return angle;
 		}
 	}
 
 	/**
 	 * Changes controller limiter mode
+	 * 
 	 * @param limiter Vector snapping mode ID
 	 */
-	public void changeControllerLimiter(int limiter){
-		controllerMode = (byte)limiter;
+	public void changeControllerLimiter(int limiter) {
+		controllerMode = (byte) limiter;
 	}
 
 	/**
@@ -486,13 +506,16 @@ public class SwerveControl {
 
 	/**
 	 * Rotates the robot around an object while facing it
+	 * 
 	 * @param RX The raw rotation input (-1, 1)
 	 */
 	public void calculateObjectControl(double RX) {
 		double distanceToFront = distanceToCenter - robotLength / 2;
 		double distanceToBack = distanceToCenter + robotLength / 2;
 
-		FLWheel.setTargetAngle(180 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront))); //! Uses degrees instead of radians
+		FLWheel.setTargetAngle(180 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront))); // ! Uses degrees
+																									// instead of
+																									// radians
 		FRWheel.setTargetAngle(180 + Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront)));
 		BLWheel.setTargetAngle(180 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToBack)));
 		BRWheel.setTargetAngle(180 + Math.toDegrees(Math.atan2(robotWidth / 2, distanceToBack)));
@@ -515,55 +538,55 @@ public class SwerveControl {
 		FLWheel.drive();
 		BRWheel.drive();
 		BLWheel.drive();
-	} 
+	}
 
 	public void setDistanceToObject(double distance) {
 		distanceToCenter = distance;
 	}
 
-	public void recalculateWheelPosition(){ 
+	public void recalculateWheelPosition() {
 		for (SwerveWheel wheel : wheelArray) {
 			wheel.resetPosition();
 		}
 	}
 
-	/* public double getTravelDistance() {
-		double x = 0;
-		double y = 0;
-		for (SwerveWheel wheel : wheelArray) {
-			double[] distance = wheel.getPosition();
-			x += distance[0];
-			y += distance[1];
-		}
-		x = x / 4;
-		y = y / 4;
-		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-	} */
+	// public double getTravelDistance() {
+	// double x = 0;
+	// double y = 0;
+	// for (SwerveWheel wheel : wheelArray) {
+	// double[] distance = wheel.getPosition();
+	// x += distance[0];
+	// y += distance[1];
+	// }
+	// x = x / 4;
+	// y = y / 4;
+	// return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+	// }
 
-	/* public void resetTravelDistance() {
-		for (SwerveWheel wheel : wheelArray) {
-			wheel.resetPosition();
-		}
-	} */
+	// public void resetTravelDistance() {
+	// for (SwerveWheel wheel : wheelArray) {
+	// wheel.resetPosition();
+	// }
+	// }
 
 	public void setControlMode(DriveMode mode) {
 		switch (mode) {
-		case ROBOTCENTRIC:
-			isFieldCentric = false;
-			isObjectCentric = false;
-			frontDirectionOffset = 0;
-			break;
-		case FIELDCENTRIC:
-			isFieldCentric = true;
-			isObjectCentric = false;
-			break;
-		case OBJECTCENTRIC:
-			isFieldCentric = false;
-			isObjectCentric = true;
-			break;
+			case ROBOTCENTRIC:
+				isFieldCentric = false;
+				isObjectCentric = false;
+				frontDirectionOffset = 0;
+				break;
+			case FIELDCENTRIC:
+				isFieldCentric = true;
+				isObjectCentric = false;
+				break;
+			case OBJECTCENTRIC:
+				isFieldCentric = false;
+				isObjectCentric = true;
+				break;
 		}
 	}
-	
+
 	public DriveMode getControlMode() {
 		if (isFieldCentric) {
 			return DriveMode.FIELDCENTRIC;
@@ -577,38 +600,38 @@ public class SwerveControl {
 		// switch out of field centric
 		// set the robot front (N,E,S,W)
 		switch (side) {
-		case NORTH:
-			//isFieldCentric = false;
-			isObjectCentric = false;
-			frontDirectionOffset = 0;
-			break;
-		case EAST:
-			//isFieldCentric = false;
-			isObjectCentric = false;
-			frontDirectionOffset = -(Math.PI / 2);
-			break;
-		case SOUTH:
-			//isFieldCentric = false;
-			isObjectCentric = false;
-			frontDirectionOffset = Math.PI;
-			break;
-		case WEST:
-			//isFieldCentric = false;
-			isObjectCentric = false;
-			frontDirectionOffset = (Math.PI / 2);
-			break;
-		default:
-			//isFieldCentric = false;
-			isObjectCentric = false;
-			frontDirectionOffset = 0;
-			break;
+			case NORTH:
+				// isFieldCentric = false;
+				isObjectCentric = false;
+				frontDirectionOffset = 0;
+				break;
+			case EAST:
+				// isFieldCentric = false;
+				isObjectCentric = false;
+				frontDirectionOffset = -(Math.PI / 2);
+				break;
+			case SOUTH:
+				// isFieldCentric = false;
+				isObjectCentric = false;
+				frontDirectionOffset = Math.PI;
+				break;
+			case WEST:
+				// isFieldCentric = false;
+				isObjectCentric = false;
+				frontDirectionOffset = (Math.PI / 2);
+				break;
+			default:
+				// isFieldCentric = false;
+				isObjectCentric = false;
+				frontDirectionOffset = 0;
+				break;
 		}
 	}
 
 	public Side getFront() {
 		// switch out of field centric
 		// set the robot front (N,E,S,W)
-		if (frontDirectionOffset==0) {
+		if (frontDirectionOffset == 0) {
 			return Side.NORTH;
 		} else if (frontDirectionOffset == -(Math.PI / 2)) {
 			return Side.EAST;
@@ -639,13 +662,14 @@ public class SwerveControl {
 		maxTargetSpeed = speed;
 	}
 
-	/* public void printPositions() {
-		for (SwerveWheel wheel : wheelArray) {
-			//*System.out.print(wheel.name + "'s position: " + wheel.getRawEncoderValue() + ", ");
-			SmartDashboard.putNumber(wheel.name, wheel.getMotorPosition());
-		}
-		//*System.out.println();
-	} */
+	// public void printPositions() {
+	// for (SwerveWheel wheel : wheelArray) {
+	// //*System.out.print(wheel.name + "'s position: " + wheel.getRawEncoderValue()
+	// + ", ");
+	// SmartDashboard.putNumber(wheel.name, wheel.getMotorPosition());
+	// }
+	// //*System.out.println();
+	// }
 
 	private void stopMoving() {
 		for (SwerveWheel wheel : wheelArray) {
@@ -659,19 +683,21 @@ public class SwerveControl {
 			SmartDashboard.putNumber(wheel.getName() + " Position", wheel.rawGetRotation());
 			double pos = wheel.rawGetAnalogRotation();
 			SmartDashboard.putNumber(wheel.getName() + " Analog Position", pos);
-			//SmartDashboard.putNumber(wheel.name + " Analog Raw Position", pos / 0.00080566406);
-		  }
+			// SmartDashboard.putNumber(wheel.name + " Analog Raw Position", pos /
+			// 0.00080566406);
+		}
 	}
 
 	public void calibrateHome() {
-		for(SwerveWheel wheel: wheelArray){
+		for (SwerveWheel wheel : wheelArray) {
 			SmartDashboard.putString("calabrating Swerve", wheel.getName());
 			wheel.calibBegin();
 		}
 	}
+
 	public void calibrateMinMax() {
-		for(SwerveWheel wheel: wheelArray) {
-			//System.out.println("calabrating " + wheel.getName());
+		for (SwerveWheel wheel : wheelArray) {
+			// System.out.println("calabrating " + wheel.getName());
 			SmartDashboard.putString("calabrating Swerve", wheel.getName());
 			wheel.calibFindMinMax();
 		}
