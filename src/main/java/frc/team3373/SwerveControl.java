@@ -46,8 +46,8 @@ public class SwerveControl {
 
 	private static SwerveControl instance;
 
-	public static SwerveControl getInstance(){
-		if(instance == null){
+	public static SwerveControl getInstance() {
+		if (instance == null) {
 			instance = new SwerveControl();
 		}
 		return instance;
@@ -58,16 +58,16 @@ public class SwerveControl {
 			int RFdriveMotorID, int RFEncMin, int RFEncMax, int RFEncHome, int RBrotateMotorID, int RBdriveMotorID,
 			int RBEncMin, int RBEncMax, int RBEncHome, SuperAHRS AHRS, double width, double length) {*/
 
-	public SwerveControl(){
+	public SwerveControl() {
 		robotWidth = Constants.robotWidth;
 		robotLength = Constants.robotLength;
 		double robotX = robotWidth / 2;
 		double robotY = robotLength / 2;
 
-		// double tanAngle = Math.atan((Constants.robotWidth / 2) / (Constants.robotLength / 2));
-		// System.out.println("Rotational Offset: "+Math.toDegrees(tanAngle));
+		double rotAngle = Math.atan((Constants.robotWidth / 2) / (Constants.robotLength / 2));
+		System.out.println("Rotational Offset: " + Math.toDegrees(rotAngle));
 		
-		rotationPID = new PIDController(0.005,0.005,0);
+		rotationPID = new PIDController(0.005, 0.005, 0);
 		initPIDController();
 
 		ahrs = SuperAHRS.getInstance();
@@ -84,13 +84,13 @@ public class SwerveControl {
 			Constants.BREncMax, Constants.BREncHome, Constants.relativeEncoderRatio, rotAngle); */
 
 		FLWheel = new SwerveWheel("FrontLeft", Constants.FLRotateMotorID, Constants.FLDriveMotorID, Constants.FLEncMin, 
-			Constants.FLEncMax, Constants.FLEncHome, Constants.relativeEncoderRatio, robotX / robotY);
+			Constants.FLEncMax, Constants.FLEncHome, Constants.relativeEncoderRatio, Math.atan(robotX/robotY) + Math.PI);
 		FRWheel = new SwerveWheel("FrontRight", Constants.FRRotateMotorID, Constants.FRDriveMotorID, Constants.FREncMin, 
-			Constants.FREncMax, Constants.FREncHome, Constants.relativeEncoderRatio, - robotX / robotY);
+			Constants.FREncMax, Constants.FREncHome, Constants.relativeEncoderRatio, Math.atan(-robotX/robotY) + Math.PI);
 		BLWheel = new SwerveWheel("BackLeft", Constants.BLRotateMotorID, Constants.BLDriveMotorID, Constants.BLEncMin, 
-			Constants.BLEncMax, Constants.BLEncHome, Constants.relativeEncoderRatio, - robotX / robotY);
+			Constants.BLEncMax, Constants.BLEncHome, Constants.relativeEncoderRatio, Math.atan(-robotX/robotY));
 		BRWheel = new SwerveWheel("BackRight", Constants.BRRotateMotorID, Constants.BRDriveMotorID, Constants.BREncMin, 
-			Constants.BREncMax, Constants.BREncHome, Constants.relativeEncoderRatio, robotX / robotY);
+			Constants.BREncMax, Constants.BREncHome, Constants.relativeEncoderRatio, Math.atan(robotX/robotY));
 
 		FLWheel.setPIDController(Constants.ROTATE_FL_PID);
 		FRWheel.setPIDController(Constants.ROTATE_FR_PID);
@@ -122,13 +122,13 @@ public class SwerveControl {
 	 * @param speed	the speed the drive at (0,1)
 	 * @param time the time in seconds to drive for
 	 */
-	public void relativeMoveRobot(double angle, double speed, double time){
+	public void relativeMoveRobot(double angle, double speed, double time) {
 		double oldSpeed = maxTargetSpeed;
 		setDriveSpeed(speed);
 		calculateSwerveControl(Math.sin(Math.toRadians(angle)), -Math.cos(Math.toRadians(angle)), 0);
-		try{
-			Thread.sleep((long) (time * 1000));
-		}catch(Exception e){
+		try {
+			Thread.sleep((long)(time * 1000));
+		} catch (Exception e) {
 			//Do nothing
 		}
 		calculateSwerveControl(0, 0, 0);
@@ -144,15 +144,15 @@ public class SwerveControl {
 	 * Rotates the robot a relative amount
 	 * @param angle	The amount to rotate by
 	 */
-	public void relativeRotateRobot(double angle){
+	public void relativeRotateRobot(double angle) {
 		//SmartDashboard.putNumber("Delta Angle", angle);
 		double currentAngle = ahrs.getYaw();
 		SmartDashboard.putNumber("Current Angle:", currentAngle);
 		double targetAngle = currentAngle + angle;
 
-		if(targetAngle >= 180){
+		if (targetAngle >= 180) {
 			targetAngle -= 360;
-		} else if(targetAngle < -180){
+		} else if (targetAngle < -180) {
 			targetAngle += 360;
 		}
 		SmartDashboard.putNumber("Target Angle: ", targetAngle);
@@ -161,7 +161,7 @@ public class SwerveControl {
 		//rotationPID.setSetpoint(targetAngle);
 		double power = rotationPID.calculate(currentAngle,targetAngle);
 		//SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
-		while(!rotationPID.atSetpoint() && RobotState.isEnabled()){ //waits until we are within range of the angle
+		while (!rotationPID.atSetpoint() && RobotState.isEnabled()) { //waits until we are within range of the angle
 			//SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
 			//rotationPID.setSetpoint(targetAngle); //tells PID loop to go to the targetAngle
 			currentAngle = ahrs.getYaw();
@@ -172,9 +172,9 @@ public class SwerveControl {
 			//SmartDashboard.putNumber("PID Power: ", power);
 			//calculateSwerveControl(0,0,0.2);
 			calculateSwerveControl(0, 0, MathUtil.clamp(power, -.75, .75)); //sets the wheels to rotate based off PID loop
-			try{
+			try {
 				Thread.sleep(1);
-			} catch(Exception e){
+			} catch (Exception e) {
 				//Do nothing
 			}
 		}
@@ -190,9 +190,9 @@ public class SwerveControl {
 	
 	public void absoluteRotateRobot(double targetAngle) {
 		double currentAngle = ahrs.getYaw();
-		if(targetAngle >= 180){
+		if (targetAngle >= 180) {
 			targetAngle-=360;
-		} else if(targetAngle < -180){
+		} else if (targetAngle < -180) {
 			targetAngle +=360;
 		}
 
@@ -201,7 +201,7 @@ public class SwerveControl {
 		//rotationPID.setSetpoint(targetAngle);
 		double power = rotationPID.calculate(currentAngle,targetAngle);
 		//SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
-		while(!rotationPID.atSetpoint() && RobotState.isEnabled()){ //waits until we are within range of the angle
+		while (!rotationPID.atSetpoint() && RobotState.isEnabled()) { //waits until we are within range of the angle
 			//SmartDashboard.putBoolean("atSetpoint", rotationPID.atSetpoint());
 			//rotationPID.setSetpoint(targetAngle); //tells PID loop to go to the targetAngle
 			currentAngle = ahrs.getYaw();
@@ -214,7 +214,7 @@ public class SwerveControl {
 			calculateSwerveControl(0, 0, MathUtil.clamp(power, -.75, .75)); //sets the wheels to rotate based off PID loop
 			try{
 				Thread.sleep(1);
-			} catch(Exception e){
+			} catch (Exception e) {
 				//Do nothing
 			}
 		}
@@ -277,19 +277,19 @@ public class SwerveControl {
 		//Math.floor(LX/(360/8))*(360/8);
 
 		// if in field centric mode make offset equal to the current angle of the navX
-		if(RX!=0){
-			getTargetAngleDelay = System.currentTimeMillis()+200;
+		if (RX != 0){
+			getTargetAngleDelay = System.currentTimeMillis() + 200;
 			targetRobotAngle = Math.toRadians(ahrs.getYaw());
-		}else{
-			if(getTargetAngleDelay>System.currentTimeMillis()){
+		} else {
+			if(getTargetAngleDelay > System.currentTimeMillis()){
 				targetRobotAngle = Math.toRadians(ahrs.getYaw());
-			}else{
-				rAxis=getRotationalCorrection();
+			} else {
+				rAxis = getRotationalCorrection();
 			}
-			if(LX == 0 && LY ==0 ){
-				rAxis=0;
+			if (LX == 0 && LY == 0){
+				rAxis = 0;
 			}
-			RX=rAxis;
+			RX = rAxis;
 		}
 
 		if (isFieldCentric) {
@@ -341,14 +341,14 @@ public class SwerveControl {
 				wheel.setTargetAngle(MathUtil.translatePIRange(Math.atan2((rotateYComponent + translationalYComponent),
 						(rotateXComponent + translationalXComponent))));// sets the target angle based off translation
 				// and rotational vectors
-				if(maxSpeed<wheel.getSpeed()){
-					maxSpeed=wheel.getSpeed();
+				if(maxSpeed < wheel.getSpeed()) {
+					maxSpeed = wheel.getSpeed();
 				}
 			}
 
-			if(maxSpeed>maxTargetSpeed){
+			if (maxSpeed > maxTargetSpeed) {
 				for (SwerveWheel wheel : wheelArray) {
-					wheel.setSpeed((wheel.getSpeed()/maxSpeed)*maxTargetSpeed);
+					wheel.setSpeed((wheel.getSpeed() / maxSpeed) * maxTargetSpeed);
 				}
 			}
 		}
@@ -377,16 +377,16 @@ public class SwerveControl {
 	private double getRotationalCorrection() {
 		double currentRotation = Math.toRadians(ahrs.getYaw());
 		double angleError = targetRobotAngle - currentRotation;
-		if(angleError>Math.PI){
-			angleError-=2*Math.PI;
-		}else if(angleError<-Math.PI){
-			angleError+=2*Math.PI;
+		if (angleError>Math.PI) {
+			angleError -= 2 * Math.PI;
+		} else if (angleError < -Math.PI) {
+			angleError += 2 * Math.PI;
 		}
 		//int directionMod = -1;
 		//int optimalDirection = 1;
 		SmartDashboard.putNumber("Current Target", targetRobotAngle);
 		SmartDashboard.putNumber("angleError", angleError);
-		double speed = (angleError/Math.PI)*Constants.ROTATIONAL_CORRECTION_FACTOR;
+		double speed = (angleError / Math.PI) * Constants.ROTATIONAL_CORRECTION_FACTOR;
 
 		if (speed > 1)
 			speed = 1;
@@ -478,10 +478,10 @@ public class SwerveControl {
 	/**
 	 * Cycles through controller limiter modes
 	 */
-	public void changeControllerLimiter(){
+	public void changeControllerLimiter() {
 		controllerMode++;
-		if(controllerMode>5)
-			controllerMode=0;
+		if (controllerMode > 5)
+			controllerMode = 0;
 	}
 
 	/**
@@ -492,7 +492,7 @@ public class SwerveControl {
 		double distanceToFront = distanceToCenter - robotLength / 2;
 		double distanceToBack = distanceToCenter + robotLength / 2;
 
-		FLWheel.setTargetAngle(180 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront)));
+		FLWheel.setTargetAngle(180 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront))); //! Uses degrees instead of radians
 		FRWheel.setTargetAngle(180 + Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront)));
 		BLWheel.setTargetAngle(180 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToBack)));
 		BRWheel.setTargetAngle(180 + Math.toDegrees(Math.atan2(robotWidth / 2, distanceToBack)));
@@ -565,9 +565,9 @@ public class SwerveControl {
 	}
 	
 	public DriveMode getControlMode() {
-		if(isFieldCentric){
+		if (isFieldCentric) {
 			return DriveMode.FIELDCENTRIC;
-		}else if(isObjectCentric){
+		} else if (isObjectCentric) {
 			return DriveMode.OBJECTCENTRIC;
 		}
 		return DriveMode.ROBOTCENTRIC;
@@ -585,7 +585,7 @@ public class SwerveControl {
 		case EAST:
 			//isFieldCentric = false;
 			isObjectCentric = false;
-			frontDirectionOffset = -(Math.PI/2);
+			frontDirectionOffset = -(Math.PI / 2);
 			break;
 		case SOUTH:
 			//isFieldCentric = false;
@@ -595,7 +595,7 @@ public class SwerveControl {
 		case WEST:
 			//isFieldCentric = false;
 			isObjectCentric = false;
-			frontDirectionOffset = (Math.PI/2);
+			frontDirectionOffset = (Math.PI / 2);
 			break;
 		default:
 			//isFieldCentric = false;
@@ -608,15 +608,15 @@ public class SwerveControl {
 	public Side getFront() {
 		// switch out of field centric
 		// set the robot front (N,E,S,W)
-		if(frontDirectionOffset==0) {
+		if (frontDirectionOffset==0) {
 			return Side.NORTH;
-		}else if(frontDirectionOffset==-(Math.PI/2)) {
+		} else if (frontDirectionOffset == -(Math.PI / 2)) {
 			return Side.EAST;
-		}else if(frontDirectionOffset==Math.PI) {
+		} else if (frontDirectionOffset == Math.PI) {
 			return Side.SOUTH;
-		}else if(frontDirectionOffset==(Math.PI/2)) {
+		} else if (frontDirectionOffset == (Math.PI / 2)) {
 			return Side.WEST;
-		}else {
+		} else {
 			return Side.UNKNOWN;
 		}
 	}
@@ -654,7 +654,7 @@ public class SwerveControl {
 		}
 	}
 
-	public void showPositions(){
+	public void showPositions() {
 		for (SwerveWheel wheel : wheelArray) {
 			SmartDashboard.putNumber(wheel.getName() + " Position", wheel.rawGetRotation());
 			double pos = wheel.rawGetAnalogRotation();
@@ -663,14 +663,14 @@ public class SwerveControl {
 		  }
 	}
 
-	public void calibrateHome(){
+	public void calibrateHome() {
 		for(SwerveWheel wheel: wheelArray){
 			SmartDashboard.putString("calabrating Swerve", wheel.getName());
 			wheel.calibBegin();
 		}
 	}
-	public void calibrateMinMax(){
-		for(SwerveWheel wheel: wheelArray){
+	public void calibrateMinMax() {
+		for(SwerveWheel wheel: wheelArray) {
 			//System.out.println("calabrating " + wheel.getName());
 			SmartDashboard.putString("calabrating Swerve", wheel.getName());
 			wheel.calibFindMinMax();
