@@ -97,7 +97,7 @@ public class Climber {
         poleMotor.setInverted(false);
         poleMotor.setIdleMode(IdleMode.kBrake);
 
-        poleEncoder = new CANEncoder(poleMotor);
+        poleEncoder = poleMotor.getEncoder();
         poleEncoder.setPosition(0);
 
         winchMotor = new CANSparkMax(Constants.WINCH_MOTOR_ID, MotorType.kBrushless);
@@ -107,7 +107,7 @@ public class Climber {
         winchMotor.setInverted(false);
         winchMotor.setIdleMode(IdleMode.kBrake);
 
-        winchEncoder = new CANEncoder(winchMotor);
+        winchEncoder = winchMotor.getEncoder();
         winchEncoder.setPosition(0);
 
         inclineMotor = new CANSparkMax(Constants.INCLINE_MOTOR_ID, MotorType.kBrushless);

@@ -108,7 +108,7 @@ public class Robot extends TimedRobot {
 
         swerve = SwerveControl.getInstance();
         swerve.setDriveSpeed(0.25);
-        swerve.changeControllerLimiter(3);
+        swerve.setControllerLimiter(3);
         //swerve.recalculateWheelPosition();
         //swerve.resetOrentation();
 
@@ -263,7 +263,8 @@ public class Robot extends TimedRobot {
         swerve.calculateSwerveControl(driver.getRawAxis(0), driver.getRawAxis(1), driver.getRawAxis(4) * 0.75);
 
         if (driver.isBPushed()) {
-            swerve.changeControllerLimiter();
+            // swerve.cycleControllerLimiter();
+            swerve.setRotatePoint(0, 0);
         }
 
         if (driver.isLBHeld()) {
@@ -279,7 +280,8 @@ public class Robot extends TimedRobot {
          */
 
         if (driver.isYPushed()) {
-            swerve.recalculateWheelPosition();
+            // swerve.recalculateWheelPosition();
+            swerve.setRotatePoint(10, 0);
         }
 
         if (driver.getRawAxis(2) > 0.8)
@@ -303,7 +305,16 @@ public class Robot extends TimedRobot {
         }
 
         if (driver.isBackPushed()) {
-            swerve.resetOrentation();
+            // swerve.resetOrentation();
+            swerve.setRotatePoint(-Constants.robotLength + 4, 0);
+        }
+
+        if (driver.isAPushed()) {
+            swerve.togglePointRotate();
+        }
+
+        if (driver.isStartPushed()) {
+            swerve.setRotatePoint(-5, 3);
         }
 
         /*

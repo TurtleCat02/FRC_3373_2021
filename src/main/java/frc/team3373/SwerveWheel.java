@@ -50,7 +50,7 @@ public class SwerveWheel {
 	public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput;
 
 	/**
-	 * @param DebugName Name of the Swerve Modual for easy debug
+	 * @param DebugName Name of the Swerve Module for easy debug
 	 * @param rotateMotorID	CanID of the rotation motor
 	 * @param driveMotorID CanID of the drive motor
 	 * @param absEncMin The minimum value of the absolute position encoder
@@ -284,16 +284,16 @@ public class SwerveWheel {
 	//##	Calibration Methods 	##
 	//################################
 
-	public void calibBegin(){
+	public void calibBegin() {
 		rotateMotor.setIdleMode(IdleMode.kCoast);
 		rotateMotor.set(0);
 	}
 
-	public void calibSetHome(){
+	public void calibSetHome() {
 		EHome = rawGetAnalogRotation();
 	}
 
-	public void calibFindMinMax(){
+	public void calibFindMinMax() {
 		EMin = Double.POSITIVE_INFINITY;
 		EMax = Double.NEGATIVE_INFINITY;
 
@@ -301,9 +301,9 @@ public class SwerveWheel {
 		double previous = current;
 		int dir = 1;
 
-		for(double s=0.1; s>0.02;s-=0.01){
+		for (double s = 0.1; s > 0.02; s -= 0.01) {
 			rotateMotor.set(s*dir);
-			while(Math.abs(current-previous)< 0.5){
+			while (Math.abs(current-previous) < 0.5) {
 				SmartDashboard.putNumber("Min", EMin);
 				SmartDashboard.putNumber("Max", EMax);
 
@@ -316,12 +316,12 @@ public class SwerveWheel {
 				current = rawGetAnalogRotation();
 			}
 			previous = current;
-			dir*=-1;
+			dir *= -1;
 		}
 
-		for(int i =0; i<10;i++){
-			rotateMotor.set(0.015*dir);
-			while(Math.abs(current-previous)< 0.5){
+		for (int i = 0; i < 10; i++) {
+			rotateMotor.set(0.015 * dir);
+			while(Math.abs(current - previous) <  0.5){
 				SmartDashboard.putNumber("Min", EMin);
 				SmartDashboard.putNumber("Max", EMax);
 				if (current > EMax)
@@ -333,18 +333,18 @@ public class SwerveWheel {
 				current = rawGetAnalogRotation();
 			}
 			previous = current;
-			dir*=-1;
+			dir *= -1;
 		}
 		rotateMotor.set(0);
-		System.out.println(name+"'s Min: "+EMin+", Max: "+EMax);
+		System.out.println(name + "'s Min: " + EMin + ", Max: " + EMax);
 	}
 
-	public void calibZeroRotation(){
+	public void calibZeroRotation() {
 		rotateMotor.getEncoder().setPosition(0);
 		m_pidController.setReference(0, ControlType.kPosition);
 	}
 
-	public void calibEnd(){
+	public void calibEnd() {
 		rotateMotor.setIdleMode(IdleMode.kBrake);
 		m_pidController.setReference(EHome, ControlType.kPosition);
 		absRadfactor = (EMax - EMin) / (TWOPI);

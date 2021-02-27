@@ -22,7 +22,8 @@ public class SwerveControl {
 
 	private SwerveWheel[] wheelArray;
 
-	private double distanceToCenter;
+	// private double distanceToCenter;
+	private double distanceToFront;
 
 	private double robotLength;
 	private double robotWidth;
@@ -43,6 +44,11 @@ public class SwerveControl {
 	private byte controllerMode = 1;
 
 	private PIDController rotationPID;
+
+	// Values for rotating around a point
+	private double[] rotateAngles;
+	private double[] rotateRatios;
+	private boolean rotateMode;
 
 	private static SwerveControl instance;
 
@@ -105,6 +111,8 @@ public class SwerveControl {
 				Constants.BLEncMax, Constants.BLEncHome, Constants.relativeEncoderRatio, Math.atan(-robotX / robotY));
 		BRWheel = new SwerveWheel("BackRight", Constants.BRRotateMotorID, Constants.BRDriveMotorID, Constants.BREncMin,
 				Constants.BREncMax, Constants.BREncHome, Constants.relativeEncoderRatio, Math.atan(robotX / robotY));
+
+		setRotatePoint(-Constants.robotLength / 2, 0); // Set rotate point to center of robot
 
 		FLWheel.setPIDController(Constants.ROTATE_FL_PID);
 		FRWheel.setPIDController(Constants.ROTATE_FR_PID);
@@ -257,6 +265,10 @@ public class SwerveControl {
 	 * @param RX Right Joystick X axis (-1, 1)
 	 */
 	public void calculateSwerveControl(double LX, double LY, double RX) {
+		if (rotateMode) {
+			pointRotate(RX);
+			return;
+		}
 		LY = -LY; // inverts joystick LY to match the Cartesian plane
 		double translationalXComponent = LX * Math.abs(LX);
 		double translationalYComponent = LY * Math.abs(LY);
@@ -487,18 +499,18 @@ public class SwerveControl {
 	}
 
 	/**
-	 * Changes controller limiter mode
+	 * Sets controller limiter mode
 	 * 
-	 * @param limiter Vector snapping mode ID
+	 * @param mode Vector snapping mode ID
 	 */
-	public void changeControllerLimiter(int limiter) {
-		controllerMode = (byte) limiter;
+	public void setControllerLimiter(int mode) {
+		controllerMode = (byte) mode;
 	}
 
 	/**
 	 * Cycles through controller limiter modes
 	 */
-	public void changeControllerLimiter() {
+	public void cycleControllerLimiter() {
 		controllerMode++;
 		if (controllerMode > 5)
 			controllerMode = 0;
@@ -510,15 +522,12 @@ public class SwerveControl {
 	 * @param RX The raw rotation input (-1, 1)
 	 */
 	public void calculateObjectControl(double RX) {
-		double distanceToFront = distanceToCenter - robotLength / 2;
-		double distanceToBack = distanceToCenter + robotLength / 2;
+		double distanceToBack = distanceToFront + robotLength;
 
-		FLWheel.setTargetAngle(180 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront))); // ! Uses degrees
-																									// instead of
-																									// radians
-		FRWheel.setTargetAngle(180 + Math.toDegrees(Math.atan2(robotWidth / 2, distanceToFront)));
-		BLWheel.setTargetAngle(180 - Math.toDegrees(Math.atan2(robotWidth / 2, distanceToBack)));
-		BRWheel.setTargetAngle(180 + Math.toDegrees(Math.atan2(robotWidth / 2, distanceToBack)));
+		FLWheel.setTargetAngle((Math.PI / 2) - Math.atan2(robotWidth / 2, distanceToFront));
+		FRWheel.setTargetAngle((Math.PI / 2) + Math.atan2(robotWidth / 2, distanceToFront));
+		BLWheel.setTargetAngle((Math.PI / 2) - Math.atan2(robotWidth / 2, distanceToBack));
+		BRWheel.setTargetAngle((Math.PI / 2) + Math.atan2(robotWidth / 2, distanceToBack));
 
 		BLWheel.setSpeed(RX);
 		BRWheel.setSpeed(RX);
@@ -541,7 +550,107 @@ public class SwerveControl {
 	}
 
 	public void setDistanceToObject(double distance) {
-		distanceToCenter = distance;
+		distanceToFront = distance;
+	}
+
+	/**
+	 * Toggles rotating around a point
+	 * @return What the mode was set to
+	 */
+	public boolean togglePointRotate() {
+		rotateMode = !rotateMode;
+		if (rotateMode) {
+			FRWheel.setTargetAngle(rotateAngles[0]);
+			FLWheel.setTargetAngle(rotateAngles[1]);
+			BRWheel.setTargetAngle(rotateAngles[2]);
+			BLWheel.setTargetAngle(rotateAngles[3]);
+		} else {
+			FRWheel.setTargetAngle(0);
+			FLWheel.setTargetAngle(0);
+			BRWheel.setTargetAngle(0);
+			BLWheel.setTargetAngle(0);
+		}
+		System.out.println("Rotate mode: " + rotateMode);
+		return rotateMode;
+	}
+
+	/**
+	 * @return If the robot is in point rotate mode
+	 */
+	public boolean isRotating() {
+		return rotateMode;
+	}
+
+	/**
+	 * Caclulates the angles and distances of each of the swerve wheels
+	 * @param distance Distance from front wheels to point in inches
+	 * @param offset Distance from center of robot to the point in inches (left=-, right=+)
+	 */
+	public void setRotatePoint(double distance, double offset) {
+		// Precalculate common values for optimization
+		double widthMinus = ((Constants.robotWidth / 2) - offset);
+		double widthPlus  = ((Constants.robotWidth / 2) + offset);
+		double FRAngle;
+		double FLAngle;
+		double BRAngle;
+		double BLAngle;
+		// Calculate the angles for each of the wheels, based off of the tangent angle of a circle centered at the point
+		if (distance == 0) { // If the point is between the front wheels, set the front wheels in opposite directions
+			FRAngle =  Math.PI / 2; // TODO: Test
+			FLAngle = -Math.PI / 2;
+		} else {
+			FRAngle = Math.atan( widthMinus /  distance);
+			FLAngle = Math.atan(-widthPlus  /  distance);
+			if (distance < 0) { // If the point is behind the front wheels, switch the direction of the front wheels
+				FRAngle += Math.PI;
+				FLAngle += Math.PI;
+			}
+		}
+		if (distance + Constants.robotLength == 0) { // If the point is between the back wheels, set the back wheels in opposite directions
+			BRAngle =  Math.PI / 2; // TODO: Test
+			BLAngle = -Math.PI / 2;
+		} else {
+			BRAngle = Math.atan( widthMinus / (distance + Constants.robotLength));
+			BLAngle = Math.atan(-widthPlus  / (distance + Constants.robotLength));
+			if (distance < -Constants.robotLength) { // If the point is behind the back wheels, switch the direction of the back wheels
+				BRAngle += Math.PI;
+				BLAngle += Math.PI;
+			}
+		}
+		// Calculate distance from each of the wheels to the point using distance formula
+		double FRDist = Math.sqrt((distance * distance) + (widthMinus * widthMinus));
+		double FLDist = Math.sqrt((distance * distance) + (widthPlus  * widthPlus));
+		double BRDist = Math.sqrt(((distance + Constants.robotLength) * (distance + Constants.robotLength)) + (widthMinus * widthMinus));
+		double BLDist = Math.sqrt(((distance + Constants.robotLength) * (distance + Constants.robotLength)) + (widthPlus  * widthPlus));
+		// Find the greatest distance of a wheel
+		double maxRotateDist = Math.max(Math.max(FRDist, FLDist), Math.max(BRDist, BLDist));
+		// Save calculated values in new arrays
+		rotateAngles = new double[] { FRAngle, FLAngle, BRAngle, BLAngle };
+		rotateRatios  = new double[] { FRDist / maxRotateDist,  FLDist / maxRotateDist,  BRDist / maxRotateDist,  BLDist / maxRotateDist };
+		if (rotateMode) {
+			FRWheel.setTargetAngle(rotateAngles[0]);
+			FLWheel.setTargetAngle(rotateAngles[1]);
+			BRWheel.setTargetAngle(rotateAngles[2]);
+			BLWheel.setTargetAngle(rotateAngles[3]);
+		}
+	}
+
+	/**
+	 * Rotates the robot about the set point
+	 * @param RX Speed to rotate around point (-1, 1)
+	 */
+	public void pointRotate(double RX) {
+		double speed = - RX * maxTargetSpeed;
+		// Sets wheel speeds based on a ratio of their distance to the point
+		FRWheel.setSpeed(speed * rotateRatios[0]);
+		FLWheel.setSpeed(speed * rotateRatios[1]);
+		BRWheel.setSpeed(speed * rotateRatios[2]);
+		BLWheel.setSpeed(speed * rotateRatios[3]);
+		// Enable wheels
+		for (SwerveWheel swerve : wheelArray) {
+			swerve.goToAngle();
+			swerve.drive();
+		}
 	}
 
 	public void recalculateWheelPosition() {
