@@ -42,6 +42,8 @@ public class SwerveWheel {
 	private double drivePosition;
 	private double driveVelocity;
 
+	private boolean reversed;
+
 	////private double stepPerDegree;
 	////private double positionOffset;
 
@@ -206,10 +208,15 @@ public class SwerveWheel {
 
 	/**
 	 * Sets the targeted angle to spin the wheel to
-	 * @param angle the angle of the wheel in radians [0, 2PI]
+	 * @param angle the angle of the wheel in radians [-PI, PI]
 	 */
 	public void setTargetAngle(double angle) {
-		//angle = angle % TWOPI;
+		if (angle < 0) {
+			angle += Math.PI;
+			reversed = true;
+		} else {
+			reversed = false;
+		}
 		targetAngle = angle;
 	}
 
@@ -222,7 +229,7 @@ public class SwerveWheel {
 
 	/**
 	 * Sets the targeted percent speed of the motor
-	 * @param speed speed [0, 1]
+	 * @param speed speed [-1, 1]
 	 */
 	public void setSpeed(double speed) {
 		SmartDashboard.putNumber(name+" Speed", speed);
@@ -232,6 +239,7 @@ public class SwerveWheel {
 			speed = -1;
 
 		targetSpeed = speed;
+		if (reversed) targetSpeed *= -1;
 	}
 
 	/**
@@ -253,23 +261,23 @@ public class SwerveWheel {
 		double localAngle = current % TWOPI;
 		double deltaTarget = targetAngle - localAngle;
 		double altDeltaTarget;
-		if(deltaTarget>0){
-			altDeltaTarget= (deltaTarget-TWOPI);
-		}else{
-			altDeltaTarget= (deltaTarget+TWOPI);
+		if (deltaTarget > 0) {
+			altDeltaTarget = (deltaTarget - TWOPI);
+		} else {
+			altDeltaTarget = (deltaTarget + TWOPI);
 		}
 		//double altPosDeltaTarget = (targetAngle+TWOPI)-localAngle;
 		double target;
 
-		if(Math.abs(altDeltaTarget)<Math.abs(deltaTarget)){
+		if(Math.abs(altDeltaTarget) < Math.abs(deltaTarget)){
 			target = altDeltaTarget + current;
 		}else{
 			target = deltaTarget + current;
 		}
 		//target = deltaTarget + current;
-		SmartDashboard.putNumber(name+" targetAngle",targetAngle);
-		SmartDashboard.putNumber(name+" new Target",target*relRadfactor);
-		m_pidController.setReference(target*relRadfactor, ControlType.kPosition);
+		SmartDashboard.putNumber(name + " targetAngle", targetAngle);
+		SmartDashboard.putNumber(name + " new Target", target * relRadfactor);
+		m_pidController.setReference(target * relRadfactor, ControlType.kPosition);
 		
 		// System.out.println(target);
 		// SmartDashboard.putNumber(name + "'s target angle'", target);

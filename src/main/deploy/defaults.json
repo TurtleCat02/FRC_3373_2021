@@ -55,6 +55,10 @@
 
     "comment-8": "WINCH",
     "winchMaxRotations": 389,
-    "winchRotationPerInch":16.974159
+    "winchRotationPerInch":16.974159,
+
+    "comment-9": "SWERVE",
+    "minTurnRadiusOffset": 0,
+    "turnRadiusScalar": 1
 }
 
