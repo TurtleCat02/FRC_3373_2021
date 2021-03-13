@@ -18,6 +18,7 @@ import frc.team3373.util.PIDConstant;
 
 public class SwerveWheel {
 	private static final double TWOPI = 2.0*Math.PI;
+	private static final double hPI = Math.PI / 2.0;
 
 	private CANSparkMax rotateMotor; // The motor which spins the assembly
 	private CANSparkMax driveMotor; // The motor powering the wheel
@@ -35,13 +36,14 @@ public class SwerveWheel {
 	private double absRadfactor = 1;
 	private double relRadfactor = 1;
 
+
 	private double targetAngle = 0;
 	private double targetSpeed = 0;
 
 	private double drivePosition;
 	private double driveVelocity;
 
-	private boolean reversed;
+	private boolean reversed = false;
 
 	////private double stepPerDegree;
 	////private double positionOffset;
@@ -63,19 +65,19 @@ public class SwerveWheel {
 	public SwerveWheel(String DebugName, int rotateMotorID, int driveMotorID, 
 			double absEncMin, double absEncMax, double absEncHome, double relEncRatio, double rotationOffset) {
 
-		EMin  = absEncMin;
-		EMax  = absEncMax;
+		EMin = absEncMin;
+		EMax = absEncMax;
 		EHome = absEncHome;
-		name  = DebugName;
-		angleOffset  = rotationOffset;
+		name = DebugName;
+		angleOffset = rotationOffset;
 		absRadfactor = (EMax - EMin) / (TWOPI);
 		relRadfactor = relEncRatio / (TWOPI);
 
 		rotateMotor = new CANSparkMax(rotateMotorID, MotorType.kBrushless);
-		driveMotor  = new CANSparkMax(driveMotorID, MotorType.kBrushless);
+		driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
 
 		rotateEncoder = rotateMotor.getEncoder();
-		driveEncoder  = driveMotor.getEncoder();
+		driveEncoder = driveMotor.getEncoder();
 
 		m_pidController = rotateMotor.getPIDController();
 		m_pidController.setReference(0, ControlType.kPosition);
@@ -84,11 +86,10 @@ public class SwerveWheel {
 
 		//positionOffset = 0;
 		//position = new double[2];
-		rotateEncoder.setPositionConversionFactor(relRadfactor);
 
 		rotateMotor.setInverted(false);
 		rotateMotor.getAnalog(AnalogMode.kAbsolute).setInverted(true);
-		rotateMotor.setIdleMode(IdleMode.kBrake); // Activates brake mode
+		rotateMotor.setIdleMode(IdleMode.kBrake);// Activates brake mode
 
 		/*System.out.println(DebugName+"'s calculated ABS position: " + Math.toDegrees(getCurrentAbsAngle())+
 			" Degrees, calculated Rel position: "+getCurrentAbsAngle()*relRadfactor); */
@@ -122,7 +123,7 @@ public class SwerveWheel {
 	/** 
 	 * Updates the Relative encoder's position the the Absolute position
 	 */
-	public void resetPosition() {
+	public void resetPosition(){
 		rotateMotor.set(0);
 		/* Runnable delayedAction = new Runnable(){ //! this is a Test! Remove if wheels have home position issues
 			public void run() {
@@ -135,7 +136,7 @@ public class SwerveWheel {
 		delay.startSingle(0.1); */
 		//delay.close();	
 		
-		double newPos = getCurrentAbsAngle() * relRadfactor;
+		double newPos=getCurrentAbsAngle()*relRadfactor;
 		rotateEncoder.setPosition(newPos);
 		m_pidController.setReference(newPos, ControlType.kPosition);
 	}
@@ -152,27 +153,27 @@ public class SwerveWheel {
 	//################################
 
 	/**
-	 * Gets the current angle of the wheel in radians;
+	 * gets the current angle of the wheel in radians;
 	 */
 	public double getCurrentAngle() {
-		double rad = rotateEncoder.getPosition();
-		SmartDashboard.putNumber(name + " Current Angle", rad);
+		double rad = (rotateEncoder.getPosition() / relRadfactor);
+		//rad = rad%TWOPI;
 		return rad;
 	}
 
 	/**
 	 * gets the current angle of the abosolute postion encoder of the wheel in radians;
 	 */
-	public double getCurrentAbsAngle() {
+	public double getCurrentAbsAngle(){
 		double avg = 0;
-		for(int i = 0; i < 10; i++){
-			avg += rotateMotor.getAnalog(AnalogMode.kAbsolute).getVoltage();
+		for(int i = 0; i<10; i++){
+			avg+=rotateMotor.getAnalog(AnalogMode.kAbsolute).getVoltage();
 		}
 		avg /= 10;
 
-		double pos = avg - EHome;
+		double pos = avg-EHome;
 		if (pos < 0) {
-			pos += (EMax - EMin);
+			pos += (EMax-EMin);
 		}
 		return pos / absRadfactor;
 	} 
@@ -208,10 +209,11 @@ public class SwerveWheel {
 
 	/**
 	 * Sets the targeted angle to spin the wheel to
-	 * @param angle the angle of the wheel in radians [-PI, PI]
+	 * @param angle the angle of the wheel in radians [0, 2PI]
 	 */
 	public void setTargetAngle(double angle) {
-		targetAngle = angle % Math.PI;
+		//angle = angle % TWOPI;
+		targetAngle = angle;
 	}
 
 	/**
@@ -223,16 +225,16 @@ public class SwerveWheel {
 
 	/**
 	 * Sets the targeted percent speed of the motor
-	 * @param speed speed [-1, 1]
+	 * @param speed speed [0, 1]
 	 */
 	public void setSpeed(double speed) {
-		SmartDashboard.putNumber(name+" Speed", speed);
 		if (speed > 1)
 			speed = 1;
 		if (speed < -1)
 			speed = -1;
 
-		if (!reversed) speed *= -1;
+		if (reversed) speed *= -1;
+		SmartDashboard.putNumber(name+" Speed", speed);
 		targetSpeed = speed;
 	}
 
@@ -252,32 +254,27 @@ public class SwerveWheel {
 
 	public void goToAngle() {
 		double current = getCurrentAngle();
-		double deltaTarget = targetAngle - (getCurrentAngle() % TWOPI) - Math.PI;
-		double altDeltaTarget;
-		if (reversed) {
-			if (deltaTarget > 0) {
-				altDeltaTarget = (deltaTarget - Math.PI);
-			} else {
-				altDeltaTarget = (deltaTarget + Math.PI);
-			}
-		} else {
-			if (deltaTarget > 0) {
-				altDeltaTarget = (deltaTarget - Math.PI);
-			} else {
-				altDeltaTarget = (deltaTarget + Math.PI);
-			}
-		}
-		//double altPosDeltaTarget = (targetAngle+TWOPI)-localAngle;
-		double target;
+		double deltaTarget = targetAngle - current;
+		double target = targetAngle;
 
-		if(Math.abs(altDeltaTarget) < Math.abs(deltaTarget)){
-			target = altDeltaTarget + current;
-		}else{
-			target = deltaTarget + current;
+		if (reversed)
+			current -= Math.copySign(Math.PI, targetAngle);
+
+		if (Math.PI - Math.abs(Math.abs(targetAngle - current) - Math.PI) > Math.PI - Math.abs(Math.abs(targetAngle + hPI - current) - Math.PI)) {
+			/* if (targetAngle > 0) {
+				target = targetAngle - Math.PI;
+			} else {
+				target = targetAngle + Math.PI;
+			} */
+			target -= Math.copySign(Math.PI, targetAngle);
+			reversed = !reversed;
 		}
+
 		//target = deltaTarget + current;
-		SmartDashboard.putNumber(name + " targetAngle", targetAngle);
-		SmartDashboard.putNumber(name + " new Target", target * relRadfactor);
+		SmartDashboard.putNumber(name + " delta Target", deltaTarget);
+		SmartDashboard.putNumber(name + " target Angle", targetAngle);
+		SmartDashboard.putNumber(name + " new Target", target);
+		SmartDashboard.putNumber(name + " Current Angle", (getCurrentAngle() % TWOPI));
 		m_pidController.setReference(target * relRadfactor, ControlType.kPosition);
 	}
 
@@ -285,28 +282,35 @@ public class SwerveWheel {
 		double current = getCurrentAngle();
 		double localAngle = current % TWOPI;
 		double deltaTarget = targetAngle - localAngle;
+		double dTarget = targetAngle - ((getCurrentAngle() % TWOPI) - Math.PI);
 		double altDeltaTarget;
-		if (deltaTarget > 0) {
-			altDeltaTarget = (deltaTarget - TWOPI);
-		} else {
-			altDeltaTarget = (deltaTarget + TWOPI);
+		if(deltaTarget>0){
+			altDeltaTarget= (deltaTarget-TWOPI);
+		}else{
+			altDeltaTarget= (deltaTarget+TWOPI);
 		}
 		//double altPosDeltaTarget = (targetAngle+TWOPI)-localAngle;
 		double target;
 
-		if(Math.abs(altDeltaTarget) < Math.abs(deltaTarget)){
+		if(Math.abs(altDeltaTarget)<Math.abs(deltaTarget)){
 			target = altDeltaTarget + current;
 		}else{
 			target = deltaTarget + current;
 		}
 		//target = deltaTarget + current;
-		SmartDashboard.putNumber(name + " targetAngle", targetAngle);
+		SmartDashboard.putNumber(name + " delta Target", dTarget);
+		SmartDashboard.putNumber(name + " target Angle", targetAngle);
 		SmartDashboard.putNumber(name + " new Target", target * relRadfactor);
-		m_pidController.setReference(target * relRadfactor, ControlType.kPosition);
+		SmartDashboard.putNumber(name + " Current Angle", ((current % TWOPI) - Math.PI));
+		m_pidController.setReference(target*relRadfactor, ControlType.kPosition);
 		
 		// System.out.println(target);
 		// SmartDashboard.putNumber(name + "'s target angle'", target);
 		// rotateMotor.set(ControlMode.Position,target);
+	} */
+
+	/* public void goToAngle() {
+		m_pidController.setReference((targetAngle % TWOPI) * relRadfactor, ControlType.kPosition);
 	} */
 
 	public void drive() {

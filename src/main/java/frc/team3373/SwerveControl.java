@@ -54,9 +54,9 @@ public class SwerveControl {
 
 	private static SwerveControl instance;
 
-	private final double hPI = Math.PI / 2; // Pi / 2
-	private final double hWidth = Constants.robotWidth / 2;
-	private final double hLength = Constants.robotLength / 2;
+	private final double hPI = Math.PI / 2.0; // Pi / 2
+	private final double hWidth = Constants.robotWidth / 2.0;
+	private final double hLength = Constants.robotLength / 2.0;
 
 	public static SwerveControl getInstance() {
 		if (instance == null) {
@@ -288,23 +288,25 @@ public class SwerveControl {
 				wheel.setSpeed(maxTargetSpeed * magnitude);
 			}
 		} else if (LY == 0 && LX == 0) { // If only rotating, calculate rotating about the center of the robot
-			System.out.println("RX: " + RX);
+			// System.out.println("RX: " + RX);
 			calculateRotateAngles(0, 0);
 			pointRotate(RX);
 		} else { // If translating and rotating at the same time, move the robot as if it is rotating about a point pi/2 radians to the right of the angle that the left stick is pressed, inversely proportional to the magnitude of the right (rotation) stick
-			System.out.println("1LX: " + LX + " LY: " + LY);
+			// System.out.println("1LX: " + LX + " LY: " + LY);
 			magnitude = Math.sqrt((LY * LY) + (LX * LX)); // How much the left stick is pressed
 			angle = Math.atan2(LY, LX); // The angle that the left stick is pressed
 			double minRadius = Math.sqrt((hLength * hLength) + (hWidth * hWidth)) + Config.getNumber("minRadiusOffset", 0); // The minimum distance of the point that it will rotate around from the center of the robot, default is the distance of the wheels
 			double pointMagnitude = (minRadius / RX) * Config.getNumber("pointMagnitudeScalar", 1); // Calculated distance of the point from the center of the robot, inversely proportional to the magnitude of the rotation
 
-			calculateRotateAngles((pointMagnitude * Math.sin(angle - hPI)), pointMagnitude * Math.cos(angle - hPI)); // Convert (magnitude, angle - pi/2) of the point to (x, y)
-			pointRotate(magnitude); // Set the rotating speed to the magnitude of the left stick
+			calculateRotateAngles(pointMagnitude * Math.cos(angle - hPI), pointMagnitude * Math.sin(angle - hPI)); // Convert (magnitude, angle - pi/2) of the point to (x, y)
+			System.out.println("Rotate Point: (" + (pointMagnitude * Math.cos(angle + hPI)) + "," + pointMagnitude * Math.sin(angle + hPI) + ")");
+			pointRotate(magnitude * Math.signum(RX)); // Set the rotating speed to the magnitude of the left stick
 		}
 
 
 		for (SwerveWheel wheel : wheelArray) { // Apply angles and speeds to swerve wheels
-			wheel.goToAngle();
+			if (Math.abs(LX) > 0.07 || Math.abs(LY) > 0.07 || Math.abs(RX) > 0.07)
+				wheel.goToAngle();
 			wheel.drive();
 		}
 	}
@@ -472,7 +474,7 @@ public class SwerveControl {
 	 * @param Y the distance right (+) to left (-) from the center of the robot (inches)
 	 */
 	private void calculateRotateAngles(double X, double Y) {
-		System.out.println("X: " + X + " Y: " + Y);
+		// System.out.println("X: " + X + " Y: " + Y);
 		// Precalculate common values for optimization
 		double wMinus = (hWidth  - X);
 		double wPlus  = (hWidth  + X);

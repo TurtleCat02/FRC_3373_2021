@@ -7,7 +7,6 @@ public class Constants {
     public static final double robotLength = 26.25; //The larger dimension, measure from center of wheels
     public static final double robotWidth = 20.10;
 
-
     public static final double wheelCircumference = 18.8495559215387594307759; //TODO measure this value
     //public static final double relativeEncoderRatio= 17.999954;
     public static final double relativeEncoderRatio= 17.9992371;
